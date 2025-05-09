@@ -1,14 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from utils import rk4, adams_bashforth
-import tracemalloc
+from solvers import rk4, adams_bashforth
 
 # Constants
 g = 9.81
 L = 1.0
 
-# Spherical pendulum ODEs
 def spherical_pendulum_odes(t, y):
     theta, phi, theta_dot, phi_dot = y
     dtheta_dt = theta_dot
@@ -19,29 +17,20 @@ def spherical_pendulum_odes(t, y):
 
 # Time settings
 t0 = 0
-tfinal = 100
+tfinal = 10
 step_size = .01
 n_steps = int((tfinal - t0) / step_size)
 dt = (tfinal - t0) / n_steps
 time_array = np.linspace(t0, tfinal, n_steps + 1)
 
 # Initial condition
+# y0 = [theta, phi, theta^dot, phi^dot]
 y0 = [np.pi / 3, 0, 0, 1]
 
 # Solve using rk4
-
-tracemalloc.start()
-
 t_vals_rk, sol_rk = rk4(spherical_pendulum_odes, n_steps, y0, t0, tfinal)
-current, peak = tracemalloc.get_traced_memory()
-print(f"RK4 Peak: {peak / 10**6:.2f} MB")
-tracemalloc.stop()
 # Solve using adams bashforth
-tracemalloc.start()
-
 t_vals_ab, sol_ab = adams_bashforth(spherical_pendulum_odes, n_steps, y0, t0, tfinal)
-print(f"AB Peak: {peak / 10**6:.2f} MB")
-tracemalloc.stop()
 
 # Extract Cartesian coordinates
 def to_cartesian(theta, phi):
@@ -53,7 +42,7 @@ def to_cartesian(theta, phi):
 x_rk, y_rk, z_rk = to_cartesian(sol_rk[:, 0], sol_rk[:, 1])
 x_ab, y_ab, z_ab = to_cartesian(sol_ab[:, 0], sol_ab[:, 1])
 
-# First figure (RK4)
+# RK4 plot
 fig1 = plt.figure()
 ax1 = fig1.add_subplot(111, projection='3d')
 bob_rk, = ax1.plot([], [], [], 'o-', lw=2, label='Bob')
@@ -80,7 +69,7 @@ def update_rk(i):
 
 ani_rk = FuncAnimation(fig1, update_rk, frames=len(t_vals_rk), init_func=init_rk, blit=True, interval=dt*1000)
 
-# Second figure (Adams-Bashforth)
+# Adams-Bashforth plot
 fig2 = plt.figure()
 ax2 = fig2.add_subplot(111, projection='3d')
 bob_ab, = ax2.plot([], [], [], 'o-', lw=2, label='Bob')

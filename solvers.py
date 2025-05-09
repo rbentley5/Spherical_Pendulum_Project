@@ -22,6 +22,8 @@ def rk4(fun, n, y0, t0, tfinal):
     elasped = end_time-start_time
     print('RK4: '+str(elasped)+' secs')
     return t, y
+
+
 def adams_bashforth(fun, n, y0, t0, tfinal):
     start_time = time.time()
     h = (tfinal - t0) / n
@@ -50,9 +52,3 @@ def adams_bashforth(fun, n, y0, t0, tfinal):
     elasped = end_time-start_time
     print('Adams-Bashforth: '+str(elasped)+' secs')
     return t, y
-
-def spherical_to_cartesian(l, theta, phi):
-    x = l * np.sin(phi) * np.cos(theta)
-    y = l*np.sin(phi) * np.sin(theta)
-    z = l*(1 - np.cos(phi))
-    return x, y, z
